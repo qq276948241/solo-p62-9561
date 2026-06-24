@@ -2,17 +2,18 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Heart } from 'lucide-react';
 import type { Pet } from '@/types';
+import { useFavorites } from '@/hooks/useFavorites';
 import Tag from './Tag';
 
 interface PetCardProps {
   pet: Pet;
-  isFavorite?: boolean;
-  onToggleFavorite?: (id: number) => void;
   className?: string;
 }
 
-export default function PetCard({ pet, isFavorite = false, onToggleFavorite, className = '' }: PetCardProps) {
+export default function PetCard({ pet, className = '' }: PetCardProps) {
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(pet.id);
 
   const handleClick = () => {
     navigate(`/pet/${pet.id}`);
@@ -20,7 +21,7 @@ export default function PetCard({ pet, isFavorite = false, onToggleFavorite, cla
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onToggleFavorite?.(pet.id);
+    toggleFavorite(pet.id);
   };
 
   return (
@@ -41,11 +42,12 @@ export default function PetCard({ pet, isFavorite = false, onToggleFavorite, cla
         </div>
         <button
           onClick={handleFavoriteClick}
+          aria-label={favorite ? '取消收藏' : '收藏'}
           className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white shadow-sm transition-all duration-200"
         >
           <Heart
             className={`w-4 h-4 transition-all duration-200 ${
-              isFavorite
+              favorite
                 ? 'fill-red-500 text-red-500 scale-110'
                 : 'text-gray-400 hover:text-red-400'
             }`}

@@ -239,7 +239,7 @@ export default function Home() {
                       className="animate-fade-in"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <PetCard pet={pet} isFavorite={isFavorite(pet.id)} onToggleFavorite={toggleFavorite} />
+                      <PetCard pet={pet} />
                     </div>
                   ))
                 ) : (
@@ -274,7 +274,7 @@ export default function Home() {
                     className="animate-fade-in"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <PetCard pet={pet} isFavorite={isFavorite(pet.id)} onToggleFavorite={toggleFavorite} className="w-full" />
+                    <PetCard pet={pet} className="w-full" />
                   </div>
                 ))}
               </div>
