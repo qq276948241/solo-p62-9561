@@ -14,6 +14,7 @@ export const mockPets: Pet[] = [
     ],
     distance: 150,
     vaccinated: true,
+    isFavorite: false,
     personality: '活泼好动，喜欢交朋友，对人非常友好。会各种小技能，坐、卧、握手都不在话下。每天需要至少1小时的运动量，适合喜欢户外活动的家庭。',
     owner: {
       name: '小明',
@@ -35,6 +36,7 @@ export const mockPets: Pet[] = [
     ],
     distance: 80,
     vaccinated: true,
+    isFavorite: false,
     personality: '温柔粘人，喜欢被撸，特别会撒娇。冬天喜欢钻被窝，晚上会陪你睡觉。不挑食，很好养。',
     owner: {
       name: '小红',
@@ -56,6 +58,7 @@ export const mockPets: Pet[] = [
     ],
     distance: 220,
     vaccinated: false,
+    isFavorite: false,
     personality: '表情包担当，性格独立有点傲娇。出门就是撒手没，回家就是粘人精。最爱玩球，能玩一整天。',
     owner: {
       name: '阿强',
@@ -77,6 +80,7 @@ export const mockPets: Pet[] = [
     ],
     distance: 300,
     vaccinated: true,
+    isFavorite: false,
     personality: '橘猫中的橘猫，能吃能睡，性格超好。随便撸不生气，是小区里的人气王。',
     owner: {
       name: '小李',
@@ -98,6 +102,7 @@ export const mockPets: Pet[] = [
     ],
     distance: 120,
     vaccinated: true,
+    isFavorite: false,
     personality: '微笑天使，颜值担当。性格温顺，对小朋友特别友好。毛发需要经常打理，但值得。',
     owner: {
       name: '小美',
@@ -119,6 +124,7 @@ export const mockPets: Pet[] = [
     ],
     distance: 180,
     vaccinated: false,
+    isFavorite: false,
     personality: '神秘优雅，喜欢安静的角落。熟悉之后会非常粘人，晚上会踩奶。最爱晒太阳。',
     owner: {
       name: '阿杰',

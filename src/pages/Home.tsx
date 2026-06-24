@@ -3,6 +3,7 @@ import { Search, Plus, MapPin, PawPrint } from 'lucide-react';
 import PetCard from '@/components/PetCard';
 import Modal from '@/components/Modal';
 import { mockPets, breeds } from '@/data/mockPets';
+import { useFavorites } from '@/hooks/useFavorites';
 import type { Pet, FilterType } from '@/types';
 
 export default function Home() {
@@ -11,16 +12,23 @@ export default function Home() {
   const [selectedSpecies, setSelectedSpecies] = useState<'all' | 'dog' | 'cat'>('all');
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [selectedPetOnMap, setSelectedPetOnMap] = useState<Pet | null>(null);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const filteredPets = useMemo(() => {
-    return mockPets.filter((pet) => {
-      const matchesSearch = pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pet.breed.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesBreed = selectedBreed === '全部' || pet.breed === selectedBreed;
-      const matchesSpecies = selectedSpecies === 'all' || pet.species === selectedSpecies;
-      return matchesSearch && matchesBreed && matchesSpecies;
-    });
-  }, [searchTerm, selectedBreed, selectedSpecies]);
+    return mockPets
+      .filter((pet) => {
+        const matchesSearch = pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          pet.breed.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesBreed = selectedBreed === '全部' || pet.breed === selectedBreed;
+        const matchesSpecies = selectedSpecies === 'all' || pet.species === selectedSpecies;
+        return matchesSearch && matchesBreed && matchesSpecies;
+      })
+      .sort((a, b) => {
+        const aFav = isFavorite(a.id) ? 0 : 1;
+        const bFav = isFavorite(b.id) ? 0 : 1;
+        return aFav - bFav;
+      });
+  }, [searchTerm, selectedBreed, selectedSpecies, isFavorite]);
 
   const getMarkerColor = (species: 'dog' | 'cat') => {
     return species === 'dog' ? 'bg-forest' : 'bg-amber-500';
@@ -231,7 +239,7 @@ export default function Home() {
                       className="animate-fade-in"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <PetCard pet={pet} />
+                      <PetCard pet={pet} isFavorite={isFavorite(pet.id)} onToggleFavorite={toggleFavorite} />
                     </div>
                   ))
                 ) : (
@@ -266,7 +274,7 @@ export default function Home() {
                     className="animate-fade-in"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <PetCard pet={pet} className="w-full" />
+                    <PetCard pet={pet} isFavorite={isFavorite(pet.id)} onToggleFavorite={toggleFavorite} className="w-full" />
                   </div>
                 ))}
               </div>

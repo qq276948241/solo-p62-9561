@@ -7,6 +7,7 @@ export interface Pet {
   photos: string[];
   distance: number;
   vaccinated: boolean;
+  isFavorite: boolean;
   personality: string;
   owner: {
     name: string;

@@ -1,19 +1,26 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react';
 import type { Pet } from '@/types';
 import Tag from './Tag';
 
 interface PetCardProps {
   pet: Pet;
+  isFavorite?: boolean;
+  onToggleFavorite?: (id: number) => void;
   className?: string;
 }
 
-export default function PetCard({ pet, className = '' }: PetCardProps) {
+export default function PetCard({ pet, isFavorite = false, onToggleFavorite, className = '' }: PetCardProps) {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/pet/${pet.id}`);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFavorite?.(pet.id);
   };
 
   return (
@@ -27,11 +34,23 @@ export default function PetCard({ pet, className = '' }: PetCardProps) {
           alt={pet.name}
           className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 left-3">
           <Tag variant={pet.vaccinated ? 'vaccinated' : 'unvaccinated'}>
             {pet.vaccinated ? '已打疫苗' : '未打疫苗'}
           </Tag>
         </div>
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 hover:bg-white shadow-sm transition-all duration-200"
+        >
+          <Heart
+            className={`w-4 h-4 transition-all duration-200 ${
+              isFavorite
+                ? 'fill-red-500 text-red-500 scale-110'
+                : 'text-gray-400 hover:text-red-400'
+            }`}
+          />
+        </button>
       </div>
 
       <div className="p-4">
