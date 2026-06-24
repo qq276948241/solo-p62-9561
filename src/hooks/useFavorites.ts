@@ -1,6 +1,11 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 
 const STORAGE_KEY = 'pet-favorites';
+
+type Subscriber = () => void;
+
+let favorites: Set<number> = loadFavorites();
+const subscribers = new Set<Subscriber>();
 
 function loadFavorites(): Set<number> {
   try {
@@ -23,55 +28,59 @@ function persistFavorites(favs: Set<number>) {
   }
 }
 
-export function useFavorites() {
-  const [favorites, setFavorites] = useState<Set<number>>(() => loadFavorites());
+function updateFavorites(next: Set<number>) {
+  favorites = next;
+  persistFavorites(next);
+  subscribers.forEach((sub) => sub());
+}
 
-  const isFavorite = useCallback(
-    (petId: number) => favorites.has(petId),
-    [favorites],
-  );
+function useForceRerender() {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const subscriber = () => setTick((t) => t + 1);
+    subscribers.add(subscriber);
+    return () => {
+      subscribers.delete(subscriber);
+    };
+  }, []);
+}
+
+export function useFavorites() {
+  useForceRerender();
+
+  const isFavorite = useCallback((petId: number) => favorites.has(petId), []);
 
   const addFavorite = useCallback((petId: number) => {
-    setFavorites((prev) => {
-      if (prev.has(petId)) return prev;
-      const next = new Set(prev);
-      next.add(petId);
-      persistFavorites(next);
-      return next;
-    });
+    if (favorites.has(petId)) return;
+    const next = new Set(favorites);
+    next.add(petId);
+    updateFavorites(next);
   }, []);
 
   const removeFavorite = useCallback((petId: number) => {
-    setFavorites((prev) => {
-      if (!prev.has(petId)) return prev;
-      const next = new Set(prev);
-      next.delete(petId);
-      persistFavorites(next);
-      return next;
-    });
+    if (!favorites.has(petId)) return;
+    const next = new Set(favorites);
+    next.delete(petId);
+    updateFavorites(next);
   }, []);
 
   const toggleFavorite = useCallback((petId: number) => {
-    setFavorites((prev) => {
-      const next = new Set(prev);
-      if (next.has(petId)) {
-        next.delete(petId);
-      } else {
-        next.add(petId);
-      }
-      persistFavorites(next);
-      return next;
-    });
+    const next = new Set(favorites);
+    if (next.has(petId)) {
+      next.delete(petId);
+    } else {
+      next.add(petId);
+    }
+    updateFavorites(next);
   }, []);
 
   const clearFavorites = useCallback(() => {
-    setFavorites(new Set());
-    persistFavorites(new Set());
+    updateFavorites(new Set());
   }, []);
 
-  const favoritesCount = useMemo(() => favorites.size, [favorites]);
+  const favoritesCount = useMemo(() => favorites.size, [favorites.size]);
 
-  const favoriteIds = useMemo(() => [...favorites], [favorites]);
+  const favoriteIds = useMemo(() => [...favorites], [favorites.size]);
 
   return {
     favorites,
